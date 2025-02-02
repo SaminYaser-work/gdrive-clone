@@ -3,8 +3,6 @@
 import { ChevronDown, Menu, Search } from "lucide-react";
 import { useState } from "react";
 
-import { DriveContent } from "~/components/drive-content";
-import { DriveSidebar } from "~/components/drive-sidebar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
@@ -20,8 +18,10 @@ import {
     getItemById,
     getItemsByParentId,
 } from "~/lib/data";
+import { DriveContent } from "./components/drive-content";
+import { DriveSidebar } from "./components/drive-sidebar";
 
-export default function Welcome() {
+export default function DrivePage() {
     const [currentFolder, setCurrentFolder] = useState<string | null>("root");
     const items = getItemsByParentId(currentFolder);
     const breadcrumbs = getBreadcrumbItems(currentFolder);
