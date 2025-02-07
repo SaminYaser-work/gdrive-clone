@@ -37,7 +37,7 @@ export function DriveContent({ items, onNavigate }: DriveContentProps) {
                                             onNavigate(item.id);
                                         }
                                     }}
-                                    className="hover:underline"
+                                    className="hover:underline cursor-pointer"
                                 >
                                     {item.type === "folder" ? (
                                         <FolderIcon className="mr-2 h-4 w-4 inline-block" />
@@ -59,12 +59,21 @@ export function DriveContent({ items, onNavigate }: DriveContentProps) {
                                     <span className="sr-only">Open menu</span>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>Download</DropdownMenuItem>
-                                <DropdownMenuItem>Rename</DropdownMenuItem>
-                                <DropdownMenuItem>Move</DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuContent
+                                align="end"
+                                className="bg-slate-900"
+                            >
+                                <DropdownMenuItem className="hover:bg-slate-700 cursor-pointer">
+                                    Rename
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-slate-700 cursor-pointer">
+                                    Move
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="hover:bg-slate-700 cursor-pointer">
+                                    Download
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="dark:bg-amber-50" />
+                                <DropdownMenuItem className="text-red-500 hover:bg-red-500 hover:text-slate-50 cursor-pointer">
                                     Delete
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

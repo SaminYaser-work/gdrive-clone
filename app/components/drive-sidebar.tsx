@@ -11,6 +11,7 @@ import {
 import { cn } from "~/lib/utils";
 
 import type React from "react"; // Added import for React
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import type { Item } from "~/lib/data";
@@ -45,7 +46,7 @@ export function DriveSidebar({
                     Trash
                 </Button>
             </div>
-            <div className="grid gap-1">
+            <div className="grid gap-1 mt-4">
                 <h3 className="px-4 text-sm font-medium">Folders</h3>
                 <ScrollArea className="h-[300px] px-1">
                     <div className="grid gap-1">
@@ -55,6 +56,7 @@ export function DriveSidebar({
                                 item={item}
                                 isActive={item.id === currentFolder}
                                 onNavigate={onNavigate}
+                                currentFolder={currentFolder}
                             />
                         ))}
                     </div>
@@ -67,24 +69,41 @@ export function DriveSidebar({
 interface SidebarItemProps {
     item: Item;
     isActive?: boolean;
+    currentFolder: string | null;
     onNavigate: (id: string) => void;
 }
 
-function SidebarItem({ item, isActive, onNavigate }: SidebarItemProps) {
+function SidebarItem({
+    item,
+    isActive,
+    onNavigate,
+    currentFolder,
+}: SidebarItemProps) {
     const children = getItemsByParentId(item.id);
     const hasChildren = children.length > 0;
+    const [collapsed, setCollapsed] = useState(true);
 
     return (
         <div>
             <Button
                 variant="ghost"
-                className={cn("w-full justify-start", isActive && "bg-muted")}
+                className={cn(
+                    "w-full justify-start cursor-pointer",
+                    isActive && "bg-slate-700"
+                )}
                 onClick={() => onNavigate(item.id)}
             >
-                {hasChildren ? (
-                    <ChevronRight className="mr-2 h-4 w-4" />
-                ) : (
-                    <ChevronDown className="mr-2 h-4 w-4 opacity-0" />
+                {hasChildren && (
+                    <button
+                        onClick={() => setCollapsed((prev) => !prev)}
+                        className="mr-2 h-4 w-4 cursor-pointer"
+                    >
+                        {!collapsed ? (
+                            <ChevronRight className="mr-2 h-4 w-4" />
+                        ) : (
+                            <ChevronDown className="mr-2 h-4 w-4" />
+                        )}
+                    </button>
                 )}
                 {item.type === "folder" ? (
                     <FolderIcon className="mr-2 h-4 w-4" />
@@ -93,13 +112,14 @@ function SidebarItem({ item, isActive, onNavigate }: SidebarItemProps) {
                 )}
                 {item.name}
             </Button>
-            {hasChildren && (
+            {collapsed && hasChildren && (
                 <div className="ml-6 grid gap-1">
                     {children.map((child) => (
                         <SidebarItem
                             key={child.id}
                             item={child}
-                            isActive={child.id === isActive}
+                            isActive={child.id === currentFolder}
+                            currentFolder={currentFolder}
                             onNavigate={onNavigate}
                         />
                     ))}

@@ -84,7 +84,7 @@ export default function Welcome() {
                                         onClick={() =>
                                             setCurrentFolder(item.id)
                                         }
-                                        className="hover:text-foreground"
+                                        className="hover:underline cursor-pointer"
                                     >
                                         {item.name}
                                     </button>
