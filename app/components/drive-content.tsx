@@ -54,7 +54,11 @@ export function DriveContent({ items, onNavigate }: DriveContentProps) {
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="cursor-pointer hover:bg-slate-700"
+                                >
                                     <MoreVertical className="h-4 w-4" />
                                     <span className="sr-only">Open menu</span>
                                 </Button>

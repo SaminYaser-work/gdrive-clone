@@ -95,7 +95,10 @@ function SidebarItem({
             >
                 {hasChildren && (
                     <button
-                        onClick={() => setCollapsed((prev) => !prev)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setCollapsed((prev) => !prev);
+                        }}
                         className="mr-2 h-4 w-4 cursor-pointer"
                     >
                         {!collapsed ? (
