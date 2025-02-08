@@ -12,35 +12,23 @@ import { cn } from "~/lib/utils";
 
 import type React from "react"; // Added import for React
 import { useState } from "react";
+import { Link, NavLink, useFetcher, useParams } from "react-router";
 import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import type { Item } from "~/lib/data";
-import { getItemsByParentId } from "~/lib/data";
+import type { Item } from "~/db/schema";
 
 interface DriveSidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    currentFolder: string | null;
-    onNavigate: (id: string) => void;
+    items: Item[];
 }
 
-export function DriveSidebar({
-    currentFolder,
-    onNavigate,
-    className,
-    ...props
-}: DriveSidebarProps) {
-    const rootItems = getItemsByParentId(null);
-
+export function DriveSidebar({ items, className, ...props }: DriveSidebarProps) {
     return (
         <div className={cn("flex flex-col gap-4", className)} {...props}>
             <div className="grid gap-1">
-                <Button
-                    variant="ghost"
-                    className="justify-start"
-                    onClick={() => onNavigate("root")}
-                >
+                <Link className="justify-start" to={`/f/1`}>
                     <StarIcon className="mr-2 h-4 w-4" />
                     Starred
-                </Button>
+                </Link>
                 <Button variant="ghost" className="justify-start">
                     <Trash2Icon className="mr-2 h-4 w-4" />
                     Trash
@@ -50,14 +38,8 @@ export function DriveSidebar({
                 <h3 className="px-4 text-sm font-medium">Folders</h3>
                 <ScrollArea className="h-[300px] px-1">
                     <div className="grid gap-1">
-                        {rootItems.map((item) => (
-                            <SidebarItem
-                                key={item.id}
-                                item={item}
-                                isActive={item.id === currentFolder}
-                                onNavigate={onNavigate}
-                                currentFolder={currentFolder}
-                            />
+                        {items.map((item) => (
+                            <SidebarItem key={item.id} item={item} />
                         ))}
                     </div>
                 </ScrollArea>
@@ -68,35 +50,32 @@ export function DriveSidebar({
 
 interface SidebarItemProps {
     item: Item;
-    isActive?: boolean;
-    currentFolder: string | null;
-    onNavigate: (id: string) => void;
 }
 
-function SidebarItem({
-    item,
-    isActive,
-    onNavigate,
-    currentFolder,
-}: SidebarItemProps) {
-    const children = getItemsByParentId(item.id);
-    const hasChildren = children.length > 0;
-    const [collapsed, setCollapsed] = useState(true);
+function SidebarItem({ item }: SidebarItemProps) {
+    const { folderId } = useParams();
+    // const children = getItemsByParentId(item.id);
+    // const hasChildren = children.length > 0;
+    const hasChildren = true;
+    const [collapsed, setCollapsed] = useState(false);
+    const isActive = folderId ? item.id === parseInt(folderId) : false;
+    const fetcher = useFetcher();
 
     return (
-        <div>
-            <Button
-                variant="ghost"
+        <>
+            <div
                 className={cn(
-                    "w-full justify-start cursor-pointer",
+                    "w-full justify-start cursor-pointer flex gap-2 items-center",
                     isActive && "bg-slate-700"
                 )}
-                onClick={() => onNavigate(item.id)}
             >
                 {hasChildren && (
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
+                            if (!collapsed) {
+                                fetcher.submit({ folderId: item.id });
+                            }
                             setCollapsed((prev) => !prev);
                         }}
                         className="mr-2 h-4 w-4 cursor-pointer"
@@ -108,26 +87,27 @@ function SidebarItem({
                         )}
                     </button>
                 )}
-                {item.type === "folder" ? (
-                    <FolderIcon className="mr-2 h-4 w-4" />
-                ) : (
-                    <FileIcon className="mr-2 h-4 w-4" />
-                )}
-                {item.name}
-            </Button>
+                <NavLink to={`/f/${item.id}`} className="flex items-center">
+                    {item.type === "folder" ? (
+                        <FolderIcon className="mr-2 h-4 w-4" />
+                    ) : (
+                        <FileIcon className="mr-2 h-4 w-4" />
+                    )}
+                    {item.name}
+                </NavLink>
+            </div>
             {collapsed && hasChildren && (
                 <div className="ml-6 grid gap-1">
-                    {children.map((child) => (
+                    TODO
+                    {/* {children.map((child) => (
                         <SidebarItem
                             key={child.id}
                             item={child}
                             isActive={child.id === currentFolder}
-                            currentFolder={currentFolder}
-                            onNavigate={onNavigate}
                         />
-                    ))}
+                    ))} */}
                 </div>
             )}
-        </div>
+        </>
     );
 }

@@ -7,9 +7,7 @@ export const filesTable = sqliteTable(
     {
         id: integer({ mode: "number" }).primaryKey({ autoIncrement: true }),
         name: text().notNull(),
-        url: text().notNull(),
         parent: integer().notNull(),
-        content: text("content").notNull(),
         size: integer("size").notNull(),
         createdAt: integer({ mode: "timestamp_ms" }),
     },
@@ -31,8 +29,17 @@ export const foldersTable = sqliteTable(
     }
 );
 
-export type InsertUser = typeof filesTable.$inferInsert;
-export type SelectUser = typeof filesTable.$inferSelect;
+export type InsertFile = typeof filesTable.$inferInsert;
+export type SelectFile = typeof filesTable.$inferSelect;
 
-export type InsertPost = typeof foldersTable.$inferInsert;
-export type SelectPost = typeof foldersTable.$inferSelect;
+export type InsertFolder = typeof foldersTable.$inferInsert;
+export type SelectFolder = typeof foldersTable.$inferSelect;
+
+export type Item = {
+    id: number;
+    name: string;
+    type: "file" | "folder";
+    parent: number | null;
+    size?: number;
+    createdAt: Date | null;
+};

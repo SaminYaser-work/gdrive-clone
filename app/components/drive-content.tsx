@@ -1,6 +1,7 @@
 /** @format */
 
 import { FileIcon, FolderIcon, MoreVertical } from "lucide-react";
+import { Link } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -16,14 +17,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import type { Item } from "~/lib/data";
+import type { Item } from "~/db/schema";
+import { getFormattedFileSize } from "~/lib/utils";
 
 interface DriveContentProps {
     items: Item[];
-    onNavigate: (id: string) => void;
 }
 
-export function DriveContent({ items, onNavigate }: DriveContentProps) {
+export function DriveContent({ items }: DriveContentProps) {
     return (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {items.map((item) => (
@@ -31,25 +32,26 @@ export function DriveContent({ items, onNavigate }: DriveContentProps) {
                     <CardHeader className="flex flex-row items-start gap-4 space-y-0">
                         <div className="space-y-1 flex-1">
                             <CardTitle className="line-clamp-1 text-base">
-                                <button
-                                    onClick={() => {
-                                        if (item.type === "folder") {
-                                            onNavigate(item.id);
-                                        }
-                                    }}
-                                    className="hover:underline cursor-pointer"
-                                >
-                                    {item.type === "folder" ? (
+                                {item.type === "folder" ? (
+                                    <Link
+                                        to={`/f/${item.id}`}
+                                        className="hover:underline cursor-pointer"
+                                    >
                                         <FolderIcon className="mr-2 h-4 w-4 inline-block" />
-                                    ) : (
+                                        {item.name}
+                                    </Link>
+                                ) : (
+                                    <span>
                                         <FileIcon className="mr-2 h-4 w-4 inline-block" />
-                                    )}
-                                    {item.name}
-                                </button>
+                                        {item.name}
+                                    </span>
+                                )}
                             </CardTitle>
                             <CardDescription>
-                                {item.size ? `${item.size} • ` : ""}
-                                {item.modified}
+                                {item.size
+                                    ? `${getFormattedFileSize(item.size)} • `
+                                    : ""}
+                                {item.createdAt?.toLocaleDateString()}
                             </CardDescription>
                         </div>
                         <DropdownMenu>
